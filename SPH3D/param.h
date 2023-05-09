@@ -1,5 +1,7 @@
 #pragma once
 #include <omp.h>
+#include <string>
+#include <fstream>
 namespace parameters
 {
     //dimension
@@ -41,4 +43,37 @@ namespace parameters
     extern double zMinGeomy;
 
     extern double diff;
+
+
+    extern double etq;
+    extern double alpha;
+    extern double beta;
+
+    extern double epsilon;
+    extern double rr0;
+    extern double dd;
+    extern double p1;
+    extern double p2;
+
+
+    extern double gamma_water;
+    extern double rho0;
+    extern double c0;
+    extern double gamma_gas;
+
+    extern double visc_water;
+    extern double visc_gas;
+
+    extern double q1;
+    extern double q2;
+
+    extern double step_time;
+    extern double max_step;
+
+    extern std::string path_Param;
+    extern std::string path_Coef;
+    extern std::string _path;
+    extern std::string _pathSave;
+
+    void set_params(std::string path_param, std::string path_coef,std::string path, std::string pathSave);
 }

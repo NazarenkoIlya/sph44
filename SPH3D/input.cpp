@@ -76,9 +76,9 @@ void ParticleInitialization::LoadShearCavity(Particle* particles, int* n_total)
 void ParticleInitialization::LoadDambBroke(Particle* particles, int* n_total)
 {
     double xl, yl, dx, dy;
-    int mp = 40, np = 40;
+    int mp = 100, np = 200;
     *n_total = mp * np;
-    xl = 1.e-3f;
+    xl = 0.5e-3f;
     yl = 1.e-3f;
     dx = xl / mp;
     dy = yl / np;
@@ -115,7 +115,7 @@ void ParticleInitialization::LoadDambBroke(Particle* particles, int* n_total)
         particles[i].p = 0.;
         particles[i].u = 357.1;
         particles[i].type = 2;
-        particles[i].hsml = dx*1.2f;
+        particles[i].hsml = dx;
     }
 }
 void ParticleInitialization::spitString(std::string str, std::string strs[])
@@ -135,7 +135,7 @@ void ParticleInitialization::loadInitialParticle(Particle *particles, int *n_tot
     int im;
     if (parameters::confingInput)
     {
-        std::ifstream sr1("C:\\Users\\Ilya\\Desktop\\Input\\Inputf_xv.txt");
+        std::ifstream sr1("C:\\Users\\Ilya\\Desktop\\Input\\f_xv.txt");
         std::ifstream sr2("C:\\Users\\Ilya\\Desktop\\Input\\f_state.txt");
         std::ifstream sr3("C:\\Users\\Ilya\\Desktop\\Input\\f_other.txt");
 

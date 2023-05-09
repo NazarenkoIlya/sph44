@@ -5,8 +5,8 @@ void InitVirtParticle::createVirtDambBreak(int itimestep,int* nVirt, int n_total
     int im, mp;
     double xl, dx, v_inf;
     *nVirt = 0;
-    mp = 80;
-    xl = 2.E-3;
+    mp = 500;
+    xl = 2.5E-3;
     dx = xl / mp;
     v_inf = 1.E-3;
 
@@ -20,8 +20,8 @@ void InitVirtParticle::createVirtDambBreak(int itimestep,int* nVirt, int n_total
     }*/
     for (int i = 0; i < 2 * mp + 1; i++)
     {
-        particles[n_total + *nVirt].x[0] = i * dx / 2.0;
-        particles[n_total + *nVirt].x[1] = xl;
+        particles[n_total + *nVirt].x[0] = i * dx / 2.;
+        particles[n_total + *nVirt].x[1] = xl/2;
         particles[n_total + *nVirt].vx[0] = 0.;
         particles[n_total + *nVirt].vx[1] = 0.0;
         *nVirt = *nVirt + 1;
@@ -34,7 +34,7 @@ void InitVirtParticle::createVirtDambBreak(int itimestep,int* nVirt, int n_total
         particles[n_total + *nVirt].vx[1] = 0.0;
         *nVirt = *nVirt + 1;
     }
-    for (int i = 0; i < 2 * mp - 1; i++)
+    for (int i = 0; i < 2 * mp/2 - 1; i++)
     {
         particles[n_total + *nVirt].x[0] = 0.0;
         particles[n_total + *nVirt].x[1] = (i + 1) * dx / 2;
@@ -53,7 +53,15 @@ void InitVirtParticle::createVirtDambBreak(int itimestep,int* nVirt, int n_total
     //        *nVirt = *nVirt + 1;
     //    }
     //}
-    for (int i = 0; i < 2 * mp - 1; i++)
+    for (int i = mp/10; i < 2 * mp / 2 - 1; i++)
+    {
+        particles[n_total + *nVirt].x[0] = 0.51e-3;
+        particles[n_total + *nVirt].x[1] = (i + 1) * dx / 2;
+        particles[n_total + *nVirt].vx[0] = 0.0;
+        particles[n_total + *nVirt].vx[1] = 0.0;
+        *nVirt = *nVirt + 1;
+    }
+    for (int i = 0; i < 2 * mp/2 - 1; i++)
     {
         particles[n_total + *nVirt].x[0] = xl;
         particles[n_total + *nVirt].x[1] = (i + 1) * dx / 2;

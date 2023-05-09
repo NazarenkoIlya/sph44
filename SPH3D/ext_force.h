@@ -10,6 +10,7 @@ public:
     double** findExtForce(int nTotal, Particle *particles, int niac, int* pair_i, int* pair_j, double** dvxdt);
 
 private:
-    double* dx;
+   // double* dx;
     double rr0, dd, p1, p2;
+    double** dx;
 };

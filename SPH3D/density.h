@@ -1,6 +1,7 @@
 #pragma once
 #include "param.h"
 #include "particles.h"
+
 #include "kernel.h"
 class Density
 {
@@ -13,8 +14,7 @@ public:
 
 private:
     
-    double  * hv, * wi;
+    double   /* hv,*/ * wi;
     double* dvx;
-   
+    double** hv;
 };
-

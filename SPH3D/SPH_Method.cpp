@@ -5,17 +5,17 @@
    
     double* SPH::findViscosity(int ntotal, double* eta)
     {
-//#pragma omp parallel for 
+#pragma omp parallel for 
         for (int i = 0; i < ntotal; i++)
         {
-            if (abs(particles[i].type) == 1)    eta[i] = 0.;
-            else if (abs(particles[i].type) == 2) eta[i] = 1.e-3;
+            if (abs(particles[i].type) == 1)    eta[i] = parameters::visc_gas;
+            else if (abs(particles[i].type) == 2) eta[i] = parameters::visc_water;
         }
         return eta;
     }
     void SPH::stepSingle(double dt, int nTotal, Particle* particles, int itimestep, double* tdsdt, double** dx, double** dvx, double* du, double** av, double* drho)
     {
-      
+        double t1, t2,time, tt1,tt2;
         int nVirt, niac = 0;
         int* pair_i = new int[parameters::maxInteration];
         int* pair_j = new int[parameters::maxInteration];
@@ -54,43 +54,67 @@
 
         if (parameters::virtualPart)  initVirtParticle.createVirtPart(itimestep, &nVirt, n_total,particles,"C:\\Users\\Ilya\\Desktop\\Input\\xv_vp.txt", "C:\\Users\\Ilya\\Desktop\\Input\\state_vp.txt", "C:\\Users\\Ilya\\Desktop\\Input\\other_vp.txt");
        
-        if (parameters::nnps == 1) SimpleSearch(n_total + nVirt, particles,&niac, pair_i, pair_j, w, dwdx);
-        else  Find_Grid(n_total + nVirt, &niac, pair_i, pair_j, w, dwdx);
+        t1 = omp_get_wtime();
+        tt1 = omp_get_wtime();
+        if (parameters::nnps == 1)nnsp.SimpleSearch(n_total + nVirt, particles,&niac, pair_i, pair_j, w, dwdx);
+        else  nnsp.Find_Grid(n_total + nVirt, particles,&niac, pair_i, pair_j, w, dwdx);
+        //nnsp.parallelFindGrid(n_total + nVirt, particles, &niac, pair_i, pair_j, w, dwdx);
+        t2 = omp_get_wtime();
+        std::cout << t2 - t1 << std::endl;
         
+        t1 = omp_get_wtime();
         if (parameters::summationDensity) density.findSumDensity(n_total + nVirt, niac, particles, pair_i, pair_j, w);
         else drho = density.findConDensity(n_total + nVirt, particles, niac, pair_i, pair_j, dwdx, drho);
-   
+        t2 = omp_get_wtime();
+        std::cout << t2 - t1 << std::endl;
+        
+        t1 = omp_get_wtime();
         if (parameters::visc) eta = findViscosity(n_total + nVirt, eta);
+        t2 = omp_get_wtime();
+        std::cout << t2 - t1 << std::endl;
        
+        t1 = omp_get_wtime();
         int_force.find(n_total + nVirt, particles, niac, pair_i, pair_j, dwdx, indvxdt, tdsdt, du, eta);
-      
+        t2 = omp_get_wtime();
+        std::cout << t2 - t1 << std::endl;
+
+        t1 = omp_get_wtime();
         if (parameters::viscArtificial)  art_visc.find(n_total + nVirt, particles, niac, pair_i, pair_j, dwdx, ardvxdt, avdudt);
-     
+        t2 = omp_get_wtime();
+        std::cout << t2 - t1 << std::endl;
+
+        t1 = omp_get_wtime();
         if (parameters::exForce) exdvxdt = ext_force.findExtForce(n_total + nVirt, particles, niac, pair_i, pair_j, exdvxdt);
-       
+        t2 = omp_get_wtime();
+        std::cout<< t2 - t1 << std::endl;
+
+        t1 = omp_get_wtime();
         if (parameters::sle != 0)  hsml.upgradeHsml(dt, n_total, particles, niac, pair_i, pair_j, dwdx);
-       
+        t2 = omp_get_wtime();
+        std::cout << t2 - t1 << std::endl;
+        
+        t1 = omp_get_wtime();
         if (parameters::heatArtificial) ahdudt = art_heat.find(n_total + nVirt, niac, pair_i, pair_j, w, dwdx, particles);
-    
-        if (parameters::averageVelocity) av = findAvVel(particles,niac, pair_i, pair_j, w, av);
-      #pragma  omp for 
+        t2 = omp_get_wtime();
+        std::cout<< t2 - t1 << std::endl;
+        t1 = omp_get_wtime();
+        if (parameters::averageVelocity) av = av_vel.findAvVel(particles,n_total,niac, pair_i, pair_j, w, av);
+        t2 = omp_get_wtime();
+        std::cout << t2 - t1 << std::endl;
+        std::cout << std::endl;
+#pragma  omp parallel for schedule(static)
         for (int i = 0; i < n_total; i++)
         {
             for (int d = 0; d < parameters::dim; d++)
             {
                 dvx[d][i] = indvxdt[d][i] + exdvxdt[d][i] + ardvxdt[d][i];
-              /*  if (i%10==0)
-                {
-                    std::cout << i << "----\t" << indvxdt[0][i]
-                        << "\t" << exdvxdt[0][i]
-                        << "\t" << ardvxdt[0][i] << std::endl;
-                }
-              */
-
             }
             du[i] = du[i] + avdudt[i] + ahdudt[i];
-        }
-
+        }  
+        
+        tt2 = omp_get_wtime();
+        std::cout << tt2 - tt1 << std::endl;
+        std::cout << std::endl;
         delete[] pair_i;
         delete[] pair_j;
         delete[] ns;
@@ -124,182 +148,9 @@
         delete[] ardvxdt;
         delete[] eta;
     }
-    double** SPH::findAvVel(Particle * particles,int niac, int* pair_i, int* pair_j, double* w, double** av)
-    {
-        double epsilon = 0.3;
-        double* dvx = new double[parameters::dim];;
-
-        for (int i = 0; i < n_total; i++)
-        {
-            for (int  d = 0; d < parameters::dim; d++)
-            {
-                av[d][i] = 0.;
-            }
-        }
-
-//#pragma omp parallel for 
-        for (int k = 0; k < niac; k++)
-        {
-            int i = pair_i[k];
-            int j = pair_j[k];
-
-            for (int d = 0; d < parameters::dim; d++)
-            {
-                dvx[d] = particles[i].vx[d] - particles[j].vx[d];
-                av[d][i] = av[d][i] - 2 * particles[j].mass * dvx[d] / (particles[i].rho + particles[j].rho) * w[k];
-                av[d][j] = av[d][j] + 2 * particles[i].mass * dvx[d] / (particles[i].rho + particles[j].rho) * w[k];
-            }
-        }
-//#pragma omp parallel for
-        for (int i = 0; i < n_total; i++)
-        {
-            for (int d = 0; d < parameters::dim; d++)
-            {
-                av[d][i] = epsilon * av[d][i];
-            }
-        }
-        delete[] dvx;
-        return av;
-    }
-    void SPH::SimpleSearch(int n_total, Particle * particles ,int* niac, int* pair_i, int* pair_j, double* w, double** dwdx)
-    {
-        int scale_k = 2;
-
-
-        double* dxiac = new double[parameters::dim];
-        double* tdwdx = new double[parameters::dim];
-        double r, driac, mhsml;
-        int i, j, d;
-        int _niac = 0;
-
-        if (parameters::skf == 1)  scale_k = 2;
-        else if (parameters::skf == 2 || parameters::skf == 3) scale_k = 3;
-
-        for (i = 0; i < n_total - 1; i++)
-        {
-            for (j = i + 1; j < n_total; j++)
-            {
-                dxiac[0] = particles[i].x[0] - particles[j].x[0];
-                driac = dxiac[0] * dxiac[0];
-
-                for (d = 1; d < parameters::dim; d++)
-                {
-                    dxiac[d] = particles[i].x[d] - particles[j].x[d];
-                    driac = driac + dxiac[d] * dxiac[d];
-                }
-
-                mhsml = (particles[i].hsml + particles[j].hsml) / 2.;
-
-                if (sqrt(driac) < (scale_k * mhsml))
-                {
-                    if (_niac < parameters::maxInteration)
-                    {
-                        pair_i[_niac] = i;
-                        pair_j[_niac] = j;
-                        r = sqrt(driac);
-                        kernel.findKernel(r, dxiac, mhsml, &w[_niac], tdwdx);
-                        for (d = 0; d < parameters::dim; d++)
-                        {
-                            dwdx[d][_niac] = tdwdx[d];
-                        }
-                        _niac++;
-                    }
-                }
-            }
-        }
-        *niac = _niac;
-        delete[] dxiac;
-        delete[] tdwdx;
-    }
-    double SPH::max_hsml()
-    {
-        double max = particles[0].hsml;
-        for (int i = 1; i < n_total; i++)
-        {
-            if (max < particles[i].hsml)  max = particles[i].hsml;
-        }
-        return max;
-    }
-    void SPH::Find_Grid(int n_total, int* niac, int* pair_i, int* pair_j, double* w, double** dwdx)
-    {
-        //std::ofstream sw1("Parallel.txt");
-        double* dxiac = new double[parameters::dim];
-        double* tdwdx = new double[parameters::dim];
-        double r, driac, mhsml;
-        int _niac = 0;
-        int help = 0;
-        int indexX, indexY;
-        int sizeY = 1;
-        double hsml = max_hsml();
-
-        if (parameters::dim == 2) sizeY = NeighbourList::SizeY(hsml);
-        NeighbourList::ParticleGrid grid(NeighbourList::SizeX(hsml), sizeY);
-        grid.Clear();
-
-        for (int i = 0; i < n_total; i++)
-        {
-            if (particles[i].type == 0) continue;
-
-            indexX = NeighbourList::Block_x(particles[i].x, hsml);
-            indexY = 0;
-
-            if (parameters::dim == 2) indexY = NeighbourList::Block_y(particles[i].x, hsml);
-            grid.AddParticles(indexX, indexY, i);
-        }
-
-        for (int i = 0; i < n_total; i++)
-        {
-            if (particles[i].type == 0) continue;
-
-            indexX = NeighbourList::Block_x(particles[i].x, hsml);
-            indexY = 0;
-
-            if (parameters::dim == 2) indexY = NeighbourList::Block_y(particles[i].x, hsml);
-            std::vector<NeighbourList::Particles> neighbour_cells;
-
-            neighbour_cells = grid.GetNeighbourGridParticles(indexX, indexY);
-
-            for (auto block : neighbour_cells)
-            {
-                for (auto j : block.GetParticle())
-                {
-                    if (i >= j) continue;
-
-                    dxiac[0] = particles[i].x[0] - particles[j].x[0];
-                    driac = dxiac[0] * dxiac[0];
-
-                    for (int d = 1; d < parameters::dim; d++)
-                    {
-                        dxiac[d] = particles[i].x[d] - particles[j].x[d];
-                        driac = driac + dxiac[d] * dxiac[d];
-                    }
-                    mhsml = (particles[i].hsml + particles[j].hsml) / 2.0f;
-
-                    if (sqrt(driac) < (NeighbourList::GetScaleK() * mhsml))
-                    {
-                        if (_niac < parameters::maxInteration)
-                        {
-                            pair_i[_niac] = i;
-                            pair_j[_niac] = j;
-                            r = sqrt(driac);
-                            kernel.findKernel(r, dxiac, hsml, &w[_niac], tdwdx);
-                            for (int d = 0; d < parameters::dim; d++)
-                            {
-                                dwdx[d][_niac] = tdwdx[d];
-                            }
-
-                            _niac++;
-                        }
-                    }
-                }
-            }
-        }
-
-        *niac = _niac;
-
-        delete[] dxiac;
-        delete[] tdwdx;
-    } 
+    
+   
+    
    
     SPH::SPH()
     {
@@ -350,11 +201,12 @@
             }
         }
         double temp_u = 0, temp_rho = 0;
+
         for (itimestep = 0; itimestep < maxtimestep; itimestep++)
         {        
             if (itimestep != 0) 
             {
-//#pragma  omp parallel  for private(temp_u,temp_rho) 
+#pragma  omp parallel  for private(temp_u,temp_rho) 
                 for (int i = 0; i < n_total; i++)
                 {
                     u_min[i] = particles[i].u;
@@ -388,7 +240,7 @@
             if (itimestep == 0) 
             {
                
-//#pragma  omp parallel for private(temp_u,temp_rho)  
+#pragma  omp parallel for private(temp_u,temp_rho)  
                 for (int i = 0; i < n_total; i++)
                 {
                     temp_u = 0.;
@@ -414,7 +266,7 @@
             }
             else 
             {
-//#pragma  omp parallel for private(temp_u,temp_rho)
+#pragma  omp parallel for private(temp_u,temp_rho)
                 for (int i = 0; i < n_total; i++)
                 {
                     temp_u = 0.;

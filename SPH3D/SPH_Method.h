@@ -11,7 +11,9 @@
 #include "hsml.h"
 #include "input.h"
 #include "input_virtual.h"
+#include "av_vel.h"
 #include "output.h"
+#include "neighbor_search.h"
 //#include <iostream>
 #include <fstream>
 #include <string>
@@ -30,19 +32,15 @@ private:
     ExtForce ext_force;
     HSML hsml;
     IntForce int_force;
-    Kernel kernel;
+    SearchNNSP nnsp;
+    //Kernel kernel;
     InitVirtParticle initVirtParticle;
-   
     SavingParticle saveParticles;
-
+    AvVel av_vel;
 
     double* findViscosity(int ntotal, double* eta);
     void stepSingle(double dt, int nTotal, Particle* particles, int itimestep, double* tdsdt, double** dx, double** dvx, double* du, double** av, double* drho);
-    double** findAvVel(Particle* particles, int niac, int* pair_i, int* pair_j, double* w, double** av);
-    void SimpleSearch(int n_total, Particle* particles, int* niac, int* pair_i, int* pair_j, double* w, double** dwdx);
-    double max_hsml();
-    void Find_Grid(int n_total, int* niac, int* pair_i, int* pair_j, double* w, double** dwdx);
-
+   
 public:
     SPH();
     void timeIntegration(double dt, int maxtimestep);

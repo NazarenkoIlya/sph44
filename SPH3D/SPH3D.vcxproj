@@ -88,6 +88,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <OpenMPSupport>true</OpenMPSupport>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -102,6 +103,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <OpenMPSupport>true</OpenMPSupport>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -116,6 +118,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <OpenMPSupport>true</OpenMPSupport>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -130,6 +133,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <OpenMPSupport>true</OpenMPSupport>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -141,6 +145,7 @@
   <ItemGroup>
     <ClCompile Include="art_heat.cpp" />
     <ClCompile Include="art_visc.cpp" />
+    <ClCompile Include="av_vel.cpp" />
     <ClCompile Include="density.cpp" />
     <ClCompile Include="ext_force.cpp" />
     <ClCompile Include="hsml.cpp" />
@@ -149,6 +154,7 @@
     <ClCompile Include="int_force.cpp" />
     <ClCompile Include="kernel.cpp" />
     <ClCompile Include="linked_list.cpp" />
+    <ClCompile Include="neighbor_search.cpp" />
     <ClCompile Include="output.cpp" />
     <ClCompile Include="param.cpp" />
     <ClCompile Include="particles.cpp" />
@@ -159,6 +165,7 @@
   <ItemGroup>
     <ClInclude Include="art_heat.h" />
     <ClInclude Include="art_visc.h" />
+    <ClInclude Include="av_vel.h" />
     <ClInclude Include="density.h" />
     <ClInclude Include="ext_force.h" />
     <ClInclude Include="hsml.h" />
@@ -167,6 +174,7 @@
     <ClInclude Include="int_force.h" />
     <ClInclude Include="kernel.h" />
     <ClInclude Include="linked_list.h" />
+    <ClInclude Include="neighbor_search.h" />
     <ClInclude Include="output.h" />
     <ClInclude Include="param.h" />
     <ClInclude Include="particles.h" />

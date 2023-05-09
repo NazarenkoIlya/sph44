@@ -4,6 +4,14 @@ void Kernel::findKernel(double r, double* dx, double hsml, double* w, double* dw
 {
     q = r / hsml;
     *w = 0.f;
+
+    if (parameters::dim == 1)
+        factor = 1.f / hsml;
+    else if (parameters::dim == 2)
+        factor = 15.f / (7.f * M_PI * hsml * hsml);
+    else if (parameters::dim == 3)
+        factor = 3.f / (2.f * M_PI * hsml * hsml * hsml);
+
     for (int d = 0; d < parameters::dim; d++)  dwdx[d] = 0.f;
     if (parameters::skf == 1) findCubicSplineKenel(r, dx, hsml, w, dwdx);
     else if (parameters::skf == 2) findGaussKernel(r, dx, hsml, w, dwdx);
@@ -17,33 +25,11 @@ Kernel::Kernel()
 
 Kernel::~Kernel(){}
 
-//if (params.skf == 1) { // Cubic spline  
-//    static rr_float factor = 15.f / (7.f * params.pi * sqr(hsml));
-//
-//    if (q <= 1) {
-//        w = factor * (2.f / 3.f - sqr(q) + cube(q) * 0.5f);
-//        dwdx = diff * (factor * (-2.f + 3.f * 0.5f * q) / sqr(hsml));
-//    }
-//    else if (q <= 2) {
-//        w = factor * (1.f / 6.f * cube(2.f - q));
-//        dwdx = -diff / dist * (factor * sqr(2.f - q) * 0.5f / hsml);
-//    }
-//    else {
-//        w = 0.f;
-//        dwdx = { 0.f };
-//    }
-//}
 void Kernel::findCubicSplineKenel(double r, double* dx, double hsml, double* w, double* dwdx)
 {
     q = r / hsml;
     *w = 0.f;
-    if (parameters::dim == 1)
-        factor = 1.f / hsml;
-    else if (parameters::dim == 2)
-        factor = 15.f/ (7.f * M_PI * hsml * hsml);
-    else if (parameters::dim == 3)
-        factor = 3.f / (2.f * M_PI * hsml * hsml * hsml);
-
+  
     if (q <= 1.f)
     {
         *w = factor * (2.f / 3.f - (q * q) + (q * q * q) * 0.5f);

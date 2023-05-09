@@ -5,8 +5,8 @@ ArtHeat::ArtHeat()
     vcc = new double[parameters::maxn];
     dedt = new double[parameters::maxn];
 
-    g1 = 0.1;
-    g2 = 1.0;
+    g1 = parameters::q1;
+    g2 = parameters::q2;
  
 }
 

@@ -4,7 +4,7 @@ Pressure::Pressure(){}
 Pressure::~Pressure(){}
 void Pressure::p_art_water(double rho, double* p, double* c)
 {
-    double gamma = 7.0, rho0 = 1000.e0,c0 = 80.;
+    double gamma = parameters::gamma_water, rho0 = parameters::rho0,c0 = parameters::c0;
    // double  b = 1.013e5f;
 
     double b = c0 * c0 * rho0 / gamma;
@@ -16,11 +16,11 @@ void Pressure::p_art_water(double rho, double* p, double* c)
     //*c = 1480.;
 
     //*c = 0.01;
-   // *p = *c * *c * rho;
+    //*p = *c * *c * rho;
 }
 void Pressure::p_gas(double rho, double u, double* p, double* c)
 {
-    double gamma = 1.4;
+    double gamma = parameters::gamma_gas;
     *p = (gamma - 1) * rho * u;
     *c = sqrt((gamma - 1) * u);
 }

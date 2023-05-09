@@ -1,5 +1,6 @@
 #pragma once
 #include <fstream>
+#include "param.h"
 class Pressure
 {
 public:
