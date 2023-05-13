@@ -68,12 +68,15 @@ namespace parameters
     extern double q2;
 
     extern double step_time;
-    extern double max_step;
+    extern int max_step;
 
     extern std::string path_Param;
     extern std::string path_Coef;
     extern std::string _path;
     extern std::string _pathSave;
 
-    void set_params(std::string path_param, std::string path_coef,std::string path, std::string pathSave);
+    extern bool compress_Morris;
+
+
+    void set_params( std::string path_coef, std::string path_param, std::string path, std::string pathSave);
 }

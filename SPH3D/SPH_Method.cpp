@@ -51,8 +51,12 @@
         }
 
         nVirt = 0;
-
-        if (parameters::virtualPart)  initVirtParticle.createVirtPart(itimestep, &nVirt, n_total,particles,"C:\\Users\\Ilya\\Desktop\\Input\\xv_vp.txt", "C:\\Users\\Ilya\\Desktop\\Input\\state_vp.txt", "C:\\Users\\Ilya\\Desktop\\Input\\other_vp.txt");
+        
+        if (parameters::virtualPart)
+            initVirtParticle.createVirtPart(itimestep, &nVirt, n_total, particles,
+                parameters::_path + "xv_vp.txt",
+                parameters::_path + "state_vp.txt",
+                parameters::_path + "other_vp.txt");
        
         t1 = omp_get_wtime();
         tt1 = omp_get_wtime();
@@ -292,8 +296,10 @@
             time += dt;
             if ((itimestep % parameters::saveStep) == 0)
             {
-                std::string path = "C:\\Users\\Ilya\\Desktop\\Save\\";
-                saveParticle(path + "f_xv -", path + "f_state -", path + "f_other -",std::to_string(itimestep));
+                saveParticle(parameters::_pathSave + "f_xv -",
+                             parameters::_pathSave + "f_state -",
+                             parameters::_pathSave + "f_other -",
+                             std::to_string(itimestep));
             }
             
         }
@@ -306,8 +312,7 @@
     }
     void SPH::saveParticle(std::string name_file1, std::string name_file2, std::string name_file3, std::string iter)
     {
-        std::string path = "C:\\Users\\Ilya\\Desktop\\Save\\";
-        saveParticles.save(n_total,particles,path + "f_xv -", path + "f_state -", path + "f_other -", std::to_string(itimestep));
+        saveParticles.save(n_total,particles, name_file1, name_file2, name_file3, std::to_string(itimestep));
     }
     SPH::~SPH()
     {

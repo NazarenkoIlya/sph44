@@ -1,4 +1,5 @@
 #include "output.h"
+#include <iostream>
 
 SavingParticle::SavingParticle()
 {
@@ -10,7 +11,6 @@ SavingParticle::~SavingParticle()
 
 void SavingParticle::save(int n_total,Particle * particles,std::string name_file1, std::string name_file2, std::string name_file3, std::string iter)
 {
-   
         std::ofstream sw1(name_file1 + iter + ".txt");
         std::ofstream sw2(name_file2 + iter + ".txt");
         std::ofstream sw3(name_file3 + iter + ".txt");

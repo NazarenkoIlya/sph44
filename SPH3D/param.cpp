@@ -24,15 +24,15 @@ int parameters::sle = 0; // 0 - unchanged 1,2,3
 int parameters::skf = 1;
 
 bool parameters::summationDensity = true;
-bool parameters::averageVelocity = false;
-bool parameters::confingInput = false;
-bool parameters::virtualPart = false;
-bool parameters::vpInput = false;
-bool parameters::visc = false;
-bool parameters::exForce = false;
+bool parameters::averageVelocity = true;
+bool parameters::confingInput = true;
+bool parameters::virtualPart = true;
+bool parameters::vpInput = true;
+bool parameters::visc = true;
+bool parameters::exForce = true;
 bool parameters::viscArtificial = true;
 bool parameters::heatArtificial = false;
-bool parameters::selfGravity = false;
+bool parameters::selfGravity = true;
 bool parameters::norDensity = false;
 
 int parameters::nSym = 0; // no symmetry/axis symmetry/center symmetry
@@ -43,7 +43,7 @@ int parameters::moniParticle = 1600;
 
 bool parameters::shockTube = false;
 bool parameters::shearCavity = false;
-bool parameters::dambBrake = true;
+bool parameters::dambBrake = false;
 bool parameters::example = false;
 
 double parameters::diff = 0.;
@@ -71,11 +71,12 @@ double parameters::q1 = 0.1;
 double parameters::q2 = 1.;
 
 double parameters::step_time = 0;
-double parameters::max_step = 0;
+int parameters::max_step = 0;
+bool parameters::compress_Morris = false;
 std::string parameters::_path = "C:\\Users\\Ilya\\Desktop\\Input\\";
 std::string parameters::_pathSave = "C:\\Users\\Ilya\\Desktop\\Save\\";
 
-void parameters::set_params(std::string path_param, std::string path_coef,std::string path, std::string pathSave)
+void parameters::set_params(std::string path_coef,std::string path_param,std::string path, std::string pathSave)
 {
     _path = path;
     _pathSave = pathSave;
@@ -107,6 +108,7 @@ void parameters::set_params(std::string path_param, std::string path_coef,std::s
     sr1 >> maxn;
     sr1 >> shockTube;
     sr1 >> shearCavity;
+    sr1 >> compress_Morris;
 
     maxInteration = maxn * 100;
 

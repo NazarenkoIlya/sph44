@@ -2,6 +2,12 @@
 Pressure::Pressure(){}
 
 Pressure::~Pressure(){}
+
+void art_comp_Morris(double rho, double* p, double* c)
+{
+    *c = 0.01;
+    *p = *c * *c * rho;
+}
 void Pressure::p_art_water(double rho, double* p, double* c)
 {
     double gamma = parameters::gamma_water, rho0 = parameters::rho0,c0 = parameters::c0;
@@ -12,6 +18,8 @@ void Pressure::p_art_water(double rho, double* p, double* c)
     if (rho > rho0)  *p = b * (pow(hrho, gamma) - 1);
     else  *p = 0.;
     *c = c0;
+    if (parameters::compress_Morris)  art_comp_Morris(rho, p, c);
+
    
     //*c = 1480.;
 

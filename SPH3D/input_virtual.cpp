@@ -143,24 +143,27 @@ void InitVirtParticle::spitString(std::string str, std::string strs[])
         n++;
     }
 }
-void InitVirtParticle::createVirtPart(int itimestep, int* nVirt, int n_total, Particle* particles, std::string fileName1 = "C:\\Users\\Илья\\Desktop\\xv_vp.txt", std::string fileName2 = "C:\\Users\\Илья\\Desktop\\state_vp.txt", std::string fileName3 = "C:\\Users\\Илья\\Desktop\\other_vp.txt")
+void InitVirtParticle::createVirtPart(int itimestep, int* nVirt, int n_total, Particle* particles, std::string fileName1, std::string fileName2, std::string fileName3)
 {/*std::ifstream sr1("xv_vp.txt");
 std::ifstream sr2("state_vp.txt");
 std::ifstream sr3("other_vp.txt");*/
     int im;
     if (parameters::vpInput)
     {
+        std::string str, strs[100];
         std::ifstream sr1(fileName1);
         std::ifstream sr2(fileName2);
         std::ifstream sr3(fileName3);
-        sr1 >> *nVirt;
+       
+        std::getline(sr1, str);
+        *nVirt = atoi(str.c_str());
+        //sr1 >> *nVirt;
 
         for (int j = 0; j < *nVirt; j++)
         {
             int i = n_total + j;
-            std::string str, strs[100];
+           // std::string str, strs[100];
             std::getline(sr1, str);
-
             spitString(str, strs);
             int n = 0;
             im = atoi(strs[n].c_str());
@@ -217,8 +220,8 @@ std::ifstream sr3("other_vp.txt");*/
             }
             sw1 << std::endl;
 
-            sw2 << i << " " << particles[i].mass << " " << particles[i].rho << " " << particles[i].p << " " << particles[i].u << std::endl;
-            sw3 << i << " " << particles[i].type << " " << particles[i].hsml << std::endl;
+            sw2 << i << " " << particles[i].mass << " " << particles[i].rho << " " << particles[i].p << " " << particles[i].u << " " << std::endl;
+            sw3 << i << " " << particles[i].type << " " << particles[i].hsml << " " << std::endl;
         }
 
         sw1.close();

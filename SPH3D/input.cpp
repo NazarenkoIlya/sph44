@@ -132,19 +132,22 @@ void ParticleInitialization::spitString(std::string str, std::string strs[])
 }
 void ParticleInitialization::loadInitialParticle(Particle *particles, int *n_total)
 {
+    std::string str, strs[100];
     int im;
     if (parameters::confingInput)
     {
-        std::ifstream sr1("C:\\Users\\Ilya\\Desktop\\Input\\f_xv.txt");
-        std::ifstream sr2("C:\\Users\\Ilya\\Desktop\\Input\\f_state.txt");
-        std::ifstream sr3("C:\\Users\\Ilya\\Desktop\\Input\\f_other.txt");
-
-        sr1 >> *n_total;
+        std::ifstream sr1(parameters::_path + "ini_xv.txt");
+        std::ifstream sr2(parameters::_path + "ini_state.txt");
+        std::ifstream sr3(parameters::_path + "ini_other.txt");
+       
+        std::getline(sr1, str);
+        *n_total = atoi(str.c_str());
+        //sr1 >> *n_total;
         std::string delimiter = " ";
 
         for (int i = 0; i < *n_total; i++)
         {
-            std::string str, strs[100];
+            //std::string str, strs[100];
             std::getline(sr1, str);
             spitString(str, strs);
             int n = 0;
@@ -181,9 +184,9 @@ void ParticleInitialization::loadInitialParticle(Particle *particles, int *n_tot
     }
     else
     {
-        std::ofstream sw1("C:\\Users\\Ilya\\Desktop\\Input\\ini_xv.txt");
-        std::ofstream sw2("C:\\Users\\Ilya\\Desktop\\Input\\ini_state.txt");
-        std::ofstream sw3("C:\\Users\\Ilya\\Desktop\\Input\\ini_other.txt");
+        std::ofstream sw1(parameters::_path + "ini_xv.txt");
+        std::ofstream sw2(parameters::_path + "ini_state.txt");
+        std::ofstream sw3(parameters::_path + "ini_other.txt");
 
         if (parameters::shockTube) LoadShockTube(particles, n_total);
         if (parameters::shearCavity) LoadShearCavity(particles, n_total);

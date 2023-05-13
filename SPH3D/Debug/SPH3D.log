@@ -1,2 +1,3 @@
-﻿  param.cpp
+﻿  SPH3D.cpp
+C:\Users\Ilya\source\repos\SPH3D\SPH3D\SPH3D.cpp(11,13): warning C4101: time: неиспользованная локальная переменная
   SPH3D.vcxproj -> C:\Users\Ilya\source\repos\SPH3D\Debug\SPH3D.exe
